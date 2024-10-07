@@ -123,6 +123,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
     }
 
     ngx_setproctitle(title);
+    ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "Set process title: %s", title);
 
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
@@ -400,6 +401,7 @@ ngx_pass_open_channel(ngx_cycle_t *cycle)
 
     ngx_memzero(&ch, sizeof(ngx_channel_t));
 
+    // 传递给其他 worker 子进程的命令，打开通信管道
     ch.command = NGX_CMD_OPEN_CHANNEL;
     ch.pid = ngx_processes[ngx_process_slot].pid;
     ch.slot = ngx_process_slot;

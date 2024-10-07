@@ -1,0 +1,89 @@
+#!/bin/bash
+
+cur_dir=$(dirname $0)
+nginx_dir="${cur_dir}/build/sbin/"
+
+function start()
+{
+    pushd "${nginx_dir}"
+    sudo ./nginx
+    popd
+}
+
+function stop()
+{
+    pushd "${nginx_dir}"
+    sudo ./nginx -s quit
+    popd
+}
+
+function restart()
+{
+    stop
+    sleep 1
+    start
+}
+
+function reload()
+{
+    pushd "${nginx_dir}"
+    sudo ./nginx -s reload
+    popd
+}
+
+function build()
+{
+    pushd "${cur_dir}"
+    ./auto/configure --with-debug --prefix=/home/aaron/projects/nginx/build --with-cc-opt=-O0
+    make
+    popd
+}
+
+function install()
+{
+    pushd "${cur_dir}"
+    sudo make install
+    popd
+}
+
+function test()
+{
+    curl http://localhost
+}
+
+
+ops=$1
+case "$ops" in
+    start)
+        echo "Starting nginx..."
+        start
+        ;;
+    stop)
+        echo "Stopping nginx..."
+        stop
+        ;;
+    restart)
+        echo "Restarting nginx..."
+        restart
+        ;;
+    reload)
+        echo "Reloading nginx..."
+        restart
+        ;;
+    build)
+        echo "Building nginx..."
+        build
+        ;;
+    install)
+        echo "Installing nginx..."
+        install
+        ;;
+    test)
+        echo "Testing nginx..."
+        test
+        ;;
+        
+    *)
+        echo "Invalid operation. Please use 'stop', 'start', or 'upgrade'."
+        ;;
+esac
